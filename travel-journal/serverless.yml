@@ -8,6 +8,7 @@ provider:
   environment:
     USERS_TABLE: Users
     JOURNAL_TABLE: Journal
+    IS_OFFLINE: true
   iam:
     role:
       statements:
@@ -21,19 +22,22 @@ provider:
 plugins:
   - serverless-wsgi
   - serverless-python-requirements
+  - serverless-offline
 
 custom:
   wsgi:
     app: app.app  # Flask app nằm trong file app.py
     packRequirements: false
+  pythonRequirements:
+    dockerizePip: non-linux
 
 functions:
   api:
     handler: wsgi_handler.handler
     events:
-      - http:
-          path: /
-          method: ANY
+      - httpApi: '*'
+          # path: /
+          # method: ANY
       - http:
           path: /{proxy+}
           method: ANY
