@@ -1,0 +1,4 @@
+Flask==3.0.3
+aws-wsgi
+boto3
+requests
