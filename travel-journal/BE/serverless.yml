@@ -26,7 +26,7 @@ plugins:
 
 custom:
   wsgi:
-    app: app.app  # Flask app nằm trong file app.py
+    app: app.app
     packRequirements: false
   pythonRequirements:
     dockerizePip: non-linux
@@ -36,8 +36,6 @@ functions:
     handler: wsgi_handler.handler
     events:
       - httpApi: '*'
-          # path: /
-          # method: ANY
       - http:
           path: /{proxy+}
           method: ANY
