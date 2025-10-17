@@ -13,11 +13,13 @@ export default function Login() {
     e.preventDefault();
     try {
       const res = await api.post("/auth/login", { email, password });
-      // Lưu token vào localStorage
+      // Lưu token và thông tin user vào localStorage
       localStorage.setItem("token", res.data.token);
+      localStorage.setItem("userId", res.data.user.id);
+      localStorage.setItem("userInfo", JSON.stringify(res.data.user));
       setMessage(`✅ Login success: ${res.data.user.username}`);
       // Chuyển hướng về trang HomePage sau 1s
-      setTimeout(() => navigate("/"), 1000);
+      setTimeout(() => navigate("/profile"), 1000);
     } catch (err) {
       setMessage(`❌ ${err.response?.data?.error || "Login failed"}`);
     }

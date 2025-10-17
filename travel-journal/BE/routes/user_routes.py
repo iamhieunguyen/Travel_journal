@@ -71,3 +71,34 @@ def list_users():
     """List all users"""
     users = user_service.list_users()
     return jsonify([user.to_dict() for user in users])
+
+# New route to get current user's profile
+@user_routes.route("/users/me", methods=["GET"])
+def get_my_profile():
+    """
+    Get the current user's profile.
+    Requires Authorization header: Bearer <JWT token>
+    """
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header:
+        return jsonify({"error": "Authorization header is required"}), 401
+
+    if not auth_header.startswith("Bearer "):
+        return jsonify({"error": "Invalid token format"}), 401
+            
+    token = auth_header.split(" ")[1]
+    
+    try:
+        from services.auth_service import AuthService
+        auth_service = AuthService()
+        
+        # Dùng AuthService để validate token và lấy user
+        user = auth_service.validate_token(token)
+        
+        # Trả về thông tin người dùng (ẩn mật khẩu)
+        return jsonify(user.to_dict(exclude_password=True)), 200
+            
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 401
+    except Exception as e:
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
