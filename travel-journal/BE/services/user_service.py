@@ -1,7 +1,7 @@
 import os
 import boto3
 from models.user import User
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Attr
 import uuid
 from datetime import datetime
 
@@ -37,7 +37,7 @@ class UserService:
     def get_user_by_email(self, email: str) -> User:
         """Get user by email"""
         result = self.users_table.scan(
-            FilterExpression=Key('email').eq(email)
+            FilterExpression=Attr('email').eq(email)
         )
         items = result.get("Items", [])
         if not items:
