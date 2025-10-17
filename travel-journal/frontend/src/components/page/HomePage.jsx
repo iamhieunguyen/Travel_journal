@@ -1,5 +1,4 @@
 import React from "react";
-import EntryList from "../service/EntryList";
 import { Button } from "react-bootstrap";
 
 export default function HomePage() {

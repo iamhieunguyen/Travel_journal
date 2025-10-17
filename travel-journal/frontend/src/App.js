@@ -1,44 +1,25 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { Box, AppBar, Toolbar, Typography, Button, Container } from "@mui/material";
-import Login from "./components/Login.jsx";
-import HomePage from "./components/HomePage.jsx";
-import Register from "./components/Register.jsx";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Container } from "@mui/material";
+import HomePage from "./components/page/HomePage";
+import Login from "./components/page/Login";
+import Register from "./components/page/Register";
 
 function App() {
   return (
     <Router>
-      <Box sx={{ flexGrow: 1 }}>
-        {/* Thanh điều hướng */}
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              🌍 Travel Journal
-            </Typography>
-            <Button color="inherit" component={Link} to="/">
-              Home
-            </Button>
-            <Button color="inherit" component={Link} to="/login">
-              Login
-            </Button>
-            <Button color="inherit" component={Link} to="/register">
-              Register
-            </Button>
-          </Toolbar>
-        </AppBar>
+      {/* 📌 Phần Header hoặc Layout chung bạn sẽ thêm sau ở đây */}
 
-        {/* Nội dung chính */}
-        <Container sx={{ mt: 4 }}>
-          <Routes>
-            {/* Trang chủ */}
-            <Route path="/" element={<HomePage />} />
+      <Container sx={{ mt: 4 }}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="*" element={<div>404 - Page Not Found</div>} />
+        </Routes>
+      </Container>
 
-            {/* Trang đăng nhập / đăng ký */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-        </Container>
-      </Box>
+      {/* 📌 Footer cũng có thể thêm ở đây sau */}
     </Router>
   );
 }
