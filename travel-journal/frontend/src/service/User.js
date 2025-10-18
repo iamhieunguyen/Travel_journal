@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://127.0.0.1:5000'; 
+const API_BASE_URL = 'http://localhost:3000'; 
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -113,6 +113,31 @@ const userService = {
       throw error;
     }
   },
-};
 
+  //    * ✅ Upload avatar cho người dùng
+  //  * POST /users/<user_id>/avatar
+  //  * @param {string} userId - ID người dùng
+  //  * @param {File} file - Ảnh đại diện (File object từ input type="file")
+  //  * @param {string} token - JWT token để xác thực
+  //  * @returns {Promise<Object>} Thông tin kết quả upload (message, avatar_url)
+  //  */
+  uploadUserAvatar: async (userId, file, token) => {
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+
+      const response = await apiClient.post(`/users/${userId}/avatar`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error(`Error uploading avatar for user ${userId}:`, error.response?.data || error.message);
+      throw error;
+    }
+  },
+};
 export default userService;
