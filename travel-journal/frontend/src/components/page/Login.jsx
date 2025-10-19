@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../service/api"; // file api.js bạn đã tạo để kết nối backend
-
+import loginService from "../../service/Login"; // ✅ import từ file service
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -12,14 +11,20 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post("/auth/login", { email, password });
-      // Lưu token vào localStorage
-      localStorage.setItem("token", res.data.token);
-      setMessage(`✅ Login success: ${res.data.user.username}`);
-      // Chuyển hướng về trang HomePage sau 1s
-      setTimeout(() => navigate("/"), 1000);
+      // ✅ gọi service thay vì gọi trực tiếp api
+      const data = await loginService.login(email, password);
+
+      const { user, token } = data;
+
+      // ✅ Lưu token & user vào localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", user.userId || user.id);
+      localStorage.setItem("userInfo", JSON.stringify(user));
+
+      setMessage(`✅ Đăng nhập thành công: ${user.username}`);
+      setTimeout(() => navigate("/profile"), 1000);
     } catch (err) {
-      setMessage(`❌ ${err.response?.data?.error || "Login failed"}`);
+      setMessage(`❌ ${err.response?.data?.error || "Đăng nhập thất bại"}`);
     }
   };
 
@@ -62,15 +67,8 @@ const styles = {
     borderRadius: "12px",
     textAlign: "center",
   },
-  title: {
-    marginBottom: "20px",
-    color: "#007bff",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "15px",
-  },
+  title: { marginBottom: "20px", color: "#007bff" },
+  form: { display: "flex", flexDirection: "column", gap: "15px" },
   input: {
     padding: "10px",
     border: "1px solid #ccc",
@@ -86,7 +84,5 @@ const styles = {
     cursor: "pointer",
     fontWeight: "600",
   },
-  message: {
-    marginTop: "15px",
-  },
+  message: { marginTop: "15px" },
 };

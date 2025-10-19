@@ -53,4 +53,27 @@ resources:
           - AttributeName: userId
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
- 
+    JournalTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.JOURNAL_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: journalId
+            AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: created_at
+            AttributeType: S
+        KeySchema:
+          - AttributeName: journalId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: userId-createdAt
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: created_at
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
