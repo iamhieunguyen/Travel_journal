@@ -3,14 +3,13 @@ import { Button } from "react-bootstrap";
 
 export default function HomePage() {
   return (
-    <div style={styles.container}>
+    <div>
       {/* Header */}
-      <header style={styles.header}>
-        <h1 style={styles.title}>🌍 Travel Journal</h1>
-        <p style={styles.subtitle}>Ghi lại hành trình và khoảnh khắc đáng nhớ của bạn</p>
+      <header >
+        <h1 >🌍 Travel Journal</h1>
+        <p >Ghi lại hành trình và khoảnh khắc đáng nhớ của bạn</p>
         <Button
           variant="primary"
-          style={styles.newButton}
           onClick={() => alert("Đi đến trang tạo bài viết mới!")}
         >
           ✏️ Tạo bài viết mới
@@ -18,12 +17,12 @@ export default function HomePage() {
       </header>
 
       {/* Content */}
-      <main style={styles.content}>
+      <main >
         <EntryList />
       </main>
 
       {/* Footer */}
-      <footer style={styles.footer}>
+      <footer >
         <p>© {new Date().getFullYear()} Travel Journal | Made with ❤️</p>
       </footer>
     </div>

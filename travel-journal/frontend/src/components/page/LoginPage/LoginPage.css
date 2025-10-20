@@ -1,0 +1,141 @@
+/* Nền mây và căn giữa khung đăng nhập */
+.login-background {
+  position: relative;
+  background: url("D:/AWS/Travel_journal/travel-journal/frontend/src/assests/images/loginBeachbackground.jpg") 
+    no-repeat center center/cover;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Lớp phủ tối + hiệu ứng mờ */
+.login-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15); /* 🌙 Lớp phủ tối */
+  backdrop-filter: blur(5px);
+  z-index: 0;
+}
+
+/* Tiêu đề hiển thị trên nền */
+.background-title {
+  position: absolute;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 34px;
+  font-weight: 600;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+  letter-spacing: 1px;
+}
+
+/* Khung đăng nhập */
+.login-card {
+  position: relative;
+  z-index: 1;
+  width: 380px;
+  padding: 40px 35px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(18px);
+  border-radius: 20px;
+  box-shadow: 0 8px 35px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+/* Hover nhẹ */
+.login-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Logo */
+.login-logo img {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 10px;
+  border-radius: 50%;
+}
+
+/* Tiêu đề & phụ đề */
+.login-title {
+  margin-bottom: 6px !important;
+  font-weight: 600;
+  color: black;
+}
+
+.login-subtitle {
+  color: gray;
+  font-size: 14px;
+}
+
+/* Form */
+.login-form {
+  text-align: left;
+  margin-top: 20px;
+}
+
+.ant-form-item-label > label {
+  color: gray;
+  font-weight: 500;
+}
+
+/* Remember + forgot */
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: -8px;
+  color: #1677ff;
+}
+
+.forgot-link {
+  color: #1677ff;
+  font-size: 13px;
+}
+
+/* Nút đăng nhập */
+.signin-btn {
+  margin-top: 10px;
+  background-color: #1677ff;
+  border: none;
+  font-weight: 500;
+  border-radius: 8px;
+  color: white;
+}
+
+.signin-btn:hover {
+  background-color: #4096ff !important;
+}
+
+/* Dòng thông báo */
+.login-message {
+  color: #ff4d4f;
+  margin-top: 8px;
+}
+
+/* Link đăng ký */
+.signup-link {
+  margin-top: 16px;
+  font-size: 13px;
+  color: gray;
+}
+
+.signup-link a {
+  color: #1677ff;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-card {
+    width: 90%;
+    padding: 30px 20px;
+  }
+}

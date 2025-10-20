@@ -1,29 +1,29 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Container } from "@mui/material";
-import HomePage from "./components/page/HomePage";
-import Login from "./components/page/Login";
-import Register from "./components/page/Register";
-import ProfilePage from "./components/page/ProfilePage";
+// import React from "react";
+// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import { Container } from "@mui/material";
+// import HomePage from "./components/page/HomePage";
+// import Login from "./components/page/Login";
+// import Register from "./components/page/Register";
+// import ProfilePage from "./components/page/ProfilePage";
 
-function App() {
-  return (
-    <Router>
-      {/* 📌 Phần Header hoặc Layout chung bạn sẽ thêm sau ở đây */}
+// function App() {
+//   return (
+//     <Router>
+//       {/* 📌 Phần Header hoặc Layout chung bạn sẽ thêm sau ở đây */}
 
-      <Container sx={{ mt: 4 }}>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="*" element={<div>404 - Page Not Found</div>} />
-        </Routes>
-      </Container>
+//       <Container sx={{ mt: 4 }}>
+//         <Routes>
+//           <Route path="/" element={<HomePage />} />
+//           <Route path="/login" element={<Login />} />
+//           <Route path="/register" element={<Register />} />
+//           <Route path="/profile" element={<ProfilePage />} />
+//           <Route path="*" element={<div>404 - Page Not Found</div>} />
+//         </Routes>
+//       </Container>
 
-      {/* 📌 Footer cũng có thể thêm ở đây sau */}
-    </Router>
-  );
-}
+//       {/* 📌 Footer cũng có thể thêm ở đây sau */}
+//     </Router>
+//   );
+// }
 
-export default App;
+// export default App;
