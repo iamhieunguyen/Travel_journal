@@ -2,7 +2,7 @@
 import os
 import boto3
 from botocore.exceptions import ClientError  # <-- thêm
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from models.journal import Journal
 
 class JournalService:
