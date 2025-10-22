@@ -1,7 +1,7 @@
 /* Nền mây và căn giữa khung đăng nhập */
 .login-background {
   position: relative;
-  background: url("D:/AWS/Travel_journal/travel-journal/frontend/src/assests/images/loginBeachbackground.jpg") 
+  background: url("../../../assests/images/loginBeachbackground.jpg") 
     no-repeat center center/cover;
   min-height: 100vh;
   display: flex;
