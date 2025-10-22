@@ -3,7 +3,13 @@ import os
 import boto3
 from botocore.exceptions import ClientError  # <-- thêm
 from typing import Dict, Any, Optional
-from models.journal import Journal
+from models.journal import Journal, now_iso
+import logging
+logger = logging.getLogger(__name__)
+from botocore.exceptions import ClientError, ParamValidationError
+
+
+
 
 class JournalService:
     def __init__(self):
@@ -62,56 +68,69 @@ class JournalService:
     # UPDATE (owner-only)
     def update(self, journal_id: str, owner_user_id: str, updates: Dict[str, Any]) -> Journal:
         allowed = {"title", "content", "location", "photos", "started_at", "ended_at", "visibility"}
-        expr_parts, names, values = [], {}, {}
+        names: Dict[str, str] = {}
+        values: Dict[str, Any] = {}
+        sets = []
 
         for k, v in updates.items():
             if k in allowed:
                 names[f"#_{k}"] = k
                 values[f":{k}"] = v
-                expr_parts.append(f"#_{k} = :{k}")
+                sets.append(f"#_{k} = :{k}")
 
         # luôn cập nhật updated_at
         names["#_updated_at"] = "updated_at"
         values[":updated_at"] = now_iso()
-        expr_parts.append("#_updated_at = :updated_at")
+        sets.append("#_updated_at = :updated_at")
 
-        if not expr_parts:
-            # Không có field hợp lệ để update -> trả về bản ghi hiện tại
+        if not sets:
             current = self.get(journal_id)
             if not current:
                 raise ValueError("Not found")
             return current
 
         try:
-            self.table.update_item(
-                Key={"journalId": journal_id},
-                UpdateExpression="SET " + ", ".join(expr_parts),
-                ExpressionAttributeNames=names,
-                ExpressionAttributeValues=values | {":owner": owner_user_id},
-                # Chỉ cho update nếu tồn tại và đúng owner
-                ConditionExpression="attribute_exists(journalId) AND userId = :owner",
-                ReturnValues="ALL_NEW",
-            )
-        except ClientError as e:
-            code = e.response.get("Error", {}).get("Code")
-            if code == "ConditionalCheckFailedException":
-                # Không phải owner hoặc không tồn tại
-                raise PermissionError("Forbidden or not found")
-            raise
-        updated = self.get(journal_id)
-        return updated  # type: ignore
+            # LƯU Ý: chỉ truyền ExpressionAttributeNames khi KHÔNG rỗng
+            kwargs = {
+                "Key": {"journalId": journal_id},
+                "UpdateExpression": "SET " + ", ".join(sets),
+                "ExpressionAttributeValues": values | {":owner": owner_user_id},
+                "ConditionExpression": "attribute_exists(journalId) AND userId = :owner",
+                "ReturnValues": "ALL_NEW",
+            }
+            if names:
+                kwargs["ExpressionAttributeNames"] = names
 
-    # DELETE (owner-only)
-    def delete(self, journal_id: str, owner_user_id: str) -> None:
-        try:
-            self.table.delete_item(
-                Key={"journalId": journal_id},
-                ConditionExpression="attribute_exists(journalId) AND userId = :owner",
-                ExpressionAttributeValues={":owner": owner_user_id},
-            )
+            self.table.update_item(**kwargs)
+
         except ClientError as e:
             code = e.response.get("Error", {}).get("Code")
             if code == "ConditionalCheckFailedException":
                 # Không phải owner hoặc không tồn tại
                 raise PermissionError("Forbidden or not found")
-            raise
+            logger.exception("DynamoDB ClientError on update")
+            raise ValueError(f"DynamoDB error: {e.response.get('Error', {}).get('Message')}")
+
+        except ParamValidationError as e:
+            # Thường gặp khi truyền None, ExpressionAttributeNames rỗng, type sai...
+            logger.exception("ParamValidationError on update")
+            raise ValueError(f"Param validation error: {e}")
+        
+        updated = self.table.get_item(Key={"journalId": journal_id}).get("Item")
+        return Journal.from_dict(updated) # type: ignore
+
+    # return self.get(journal_id)  
+        # DELETE (owner-only)
+    def delete(self, journal_id: str, owner_user_id: str) -> None:
+            try:
+                self.table.delete_item(
+                    Key={"journalId": journal_id},
+                    ConditionExpression="attribute_exists(journalId) AND userId = :owner",
+                    ExpressionAttributeValues={":owner": owner_user_id},
+                )
+            except ClientError as e:
+                code = e.response.get("Error", {}).get("Code")
+                if code == "ConditionalCheckFailedException":
+                    # Không phải owner hoặc không tồn tại
+                    raise PermissionError("Forbidden or not found")
+                raise

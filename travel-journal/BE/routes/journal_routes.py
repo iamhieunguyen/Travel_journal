@@ -83,6 +83,7 @@ def update_journal(journal_id):
     except ValueError as e:  # "Not found"
         return jsonify({"error": str(e)}), 404
     except Exception:
+        import logging; logging.getLogger(__name__).exception("Unhandled update error")
         return jsonify({"error": "Internal Server Error"}), 500
 
     return jsonify(updated.to_dict()), 200
