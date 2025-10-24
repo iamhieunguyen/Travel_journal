@@ -5,6 +5,8 @@ provider:
   name: aws
   runtime: python3.11
   region: us-east-1
+  httpApi:
+    cors: true
   environment:
     USERS_TABLE: Users
     JOURNAL_TABLE: Journal
@@ -17,12 +19,17 @@ provider:
             - dynamodb:PutItem
             - dynamodb:GetItem
             - dynamodb:Scan
+            - dynamodb:Query
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
           Resource: "*"
 
 plugins:
   - serverless-wsgi
   - serverless-python-requirements
   - serverless-offline
+  #plugins will used in future for local dynamodb testing
+  # - serverless-dynamodb-local
 
 custom:
   wsgi:
@@ -30,6 +37,15 @@ custom:
     packRequirements: false
   pythonRequirements:
     dockerizePip: non-linux
+
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+      seed: false
 
 functions:
   api:
@@ -65,6 +81,8 @@ resources:
             AttributeType: S
           - AttributeName: created_at
             AttributeType: S
+          - AttributeName: geohash_prefix
+            AttributeType: S
         KeySchema:
           - AttributeName: journalId
             KeyType: HASH
@@ -72,6 +90,14 @@ resources:
           - IndexName: userId-createdAt
             KeySchema:
               - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: created_at
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          - IndexName: geohashPrefixIndex
+            KeySchema:
+              - AttributeName: geohash_prefix
                 KeyType: HASH
               - AttributeName: created_at
                 KeyType: RANGE

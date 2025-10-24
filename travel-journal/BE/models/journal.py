@@ -15,13 +15,17 @@ class Journal:
     userId: str
     title: str
     content: str
-    location: Optional[str] = None
-    photos: List[str] = field(default_factory=list)  # URLs ảnh (để trống nếu chưa dùng S3)
+    location: Optional[Dict[str, Any]] = None
+    photos: List[str] = field(default_factory=list)
     started_at: Optional[str] = None
     ended_at: Optional[str] = None
-    visibility: str = "private"  # "private" | "public"
+    visibility: str = "private"
     created_at: str = field(default_factory=now_iso)
     updated_at: str = field(default_factory=now_iso)
+
+    # ✅ thêm 2 field này để khớp item đã put vào DDB
+    geohash: Optional[str] = None
+    geohash_prefix: Optional[str] = None
 
     @staticmethod
     def new(user_id: str, title: str, content: str, **kwargs) -> "Journal":
@@ -54,4 +58,7 @@ class Journal:
             "visibility": self.visibility,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
+            # ✅ xuất 2 field geo nếu có
+            "geohash": self.geohash,
+            "geohash_prefix": self.geohash_prefix,
         }

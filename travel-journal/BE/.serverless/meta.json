@@ -341,5 +341,238 @@
     "serviceProviderAwsCfStackUpdated": null,
     "serviceProviderAwsCfStackStatus": null,
     "serviceProviderAwsCfStackOutputs": null
+  },
+  "D:\\AWS_Project\\Travel_journal\\travel-journal\\BE\\serverless.yml": {
+    "versionFramework": "4.22.0",
+    "servicePath": "D:\\AWS_Project\\Travel_journal\\travel-journal\\BE\\serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "service": "travel-journal",
+      "frameworkVersion": "4",
+      "provider": {
+        "name": "aws",
+        "runtime": "python3.11",
+        "region": "us-east-1",
+        "httpApi": {
+          "cors": true
+        },
+        "environment": {
+          "USERS_TABLE": "Users",
+          "JOURNAL_TABLE": "Journal",
+          "IS_OFFLINE": true
+        },
+        "iam": {
+          "role": {
+            "statements": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "dynamodb:PutItem",
+                  "dynamodb:GetItem",
+                  "dynamodb:Scan",
+                  "dynamodb:Query",
+                  "dynamodb:UpdateItem",
+                  "dynamodb:DeleteItem"
+                ],
+                "Resource": "*"
+              }
+            ]
+          }
+        },
+        "stage": "dev",
+        "versionFunctions": true
+      },
+      "plugins": [
+        "serverless-wsgi",
+        "serverless-offline",
+        "serverless-dynamodb-local"
+      ],
+      "custom": {
+        "wsgi": {
+          "app": "app.app",
+          "packRequirements": false
+        },
+        "pythonRequirements": {
+          "dockerizePip": "non-linux"
+        },
+        "dynamodb": {
+          "stages": [
+            "dev"
+          ],
+          "start": {
+            "port": 8000,
+            "inMemory": true,
+            "migrate": true,
+            "seed": false
+          }
+        }
+      },
+      "functions": {
+        "api": {
+          "handler": "wsgi_handler.handler",
+          "events": [
+            {
+              "httpApi": "*"
+            },
+            {
+              "http": {
+                "path": "/{proxy+}",
+                "method": "ANY"
+              }
+            }
+          ]
+        }
+      },
+      "resources": {
+        "Resources": {
+          "UsersTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "Users",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "userId",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "userId",
+                  "KeyType": "HASH"
+                }
+              ],
+              "BillingMode": "PAY_PER_REQUEST"
+            }
+          },
+          "JournalTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "Journal",
+              "BillingMode": "PAY_PER_REQUEST",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "journalId",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "userId",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "created_at",
+                  "AttributeType": "S"
+                },
+                {
+                  "AttributeName": "geohash_prefix",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "journalId",
+                  "KeyType": "HASH"
+                }
+              ],
+              "GlobalSecondaryIndexes": [
+                {
+                  "IndexName": "userId-createdAt",
+                  "KeySchema": [
+                    {
+                      "AttributeName": "userId",
+                      "KeyType": "HASH"
+                    },
+                    {
+                      "AttributeName": "created_at",
+                      "KeyType": "RANGE"
+                    }
+                  ],
+                  "Projection": {
+                    "ProjectionType": "ALL"
+                  }
+                },
+                {
+                  "IndexName": "geohashPrefixIndex",
+                  "KeySchema": [
+                    {
+                      "AttributeName": "geohash_prefix",
+                      "KeyType": "HASH"
+                    },
+                    {
+                      "AttributeName": "created_at",
+                      "KeyType": "RANGE"
+                    }
+                  ],
+                  "Projection": {
+                    "ProjectionType": "ALL"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "python3.11",
+      "region": "us-east-1",
+      "httpApi": {
+        "cors": true
+      },
+      "environment": {
+        "USERS_TABLE": "Users",
+        "JOURNAL_TABLE": "Journal",
+        "IS_OFFLINE": true
+      },
+      "iam": {
+        "role": {
+          "statements": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem"
+              ],
+              "Resource": "*"
+            }
+          ]
+        }
+      },
+      "stage": "dev",
+      "versionFunctions": true
+    },
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "error": {
+      "message": "Serverless plugin \"serverless-dynamodb-local\" not found. Make sure it's installed and listed in the \"plugins\" section of your serverless config file. Use the --debug flag to learn more.",
+      "stack": "ServerlessError2: Serverless plugin \"serverless-dynamodb-local\" not found. Make sure it's installed and listed in the \"plugins\" section of your serverless config file. Use the --debug flag to learn more.\n    at PluginManager.resolveServicePlugins (file:///C:/Users/kjt/.serverless/releases/4.22.0/package/dist/sf-core.js:1323:4433)\n    at async PluginManager.loadAllPlugins (file:///C:/Users/kjt/.serverless/releases/4.22.0/package/dist/sf-core.js:1323:2626)\n    at async Serverless.init (file:///C:/Users/kjt/.serverless/releases/4.22.0/package/dist/sf-core.js:1330:9843)\n    at async runFramework (file:///C:/Users/kjt/.serverless/releases/4.22.0/package/dist/sf-core.js:1357:839)\n    at async TraditionalRunner.run (file:///C:/Users/kjt/.serverless/releases/4.22.0/package/dist/sf-core.js:1353:28331)\n    at async route (file:///C:/Users/kjt/.serverless/releases/4.22.0/package/dist/sf-core.js:1528:2878)\n    at async Object.run (file:///C:/Users/kjt/.serverless/releases/4.22.0/package/dist/sf-core.js:1529:3755)\n    at async run2 (file:///C:/Users/kjt/.serverless/releases/4.22.0/package/dist/sf-core.js:1529:4909)",
+      "code": "PLUGIN_NOT_FOUND"
+    },
+    "serviceRawFile": "service: travel-journal\r\nframeworkVersion: '4'\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: python3.11\r\n  region: us-east-1\r\n  httpApi:\r\n    cors: true\r\n  environment:\r\n    USERS_TABLE: Users\r\n    JOURNAL_TABLE: Journal\r\n    IS_OFFLINE: true\r\n  iam:\r\n    role:\r\n      statements:\r\n        - Effect: Allow\r\n          Action:\r\n            - dynamodb:PutItem\r\n            - dynamodb:GetItem\r\n            - dynamodb:Scan\r\n            - dynamodb:Query\r\n            - dynamodb:UpdateItem\r\n            - dynamodb:DeleteItem\r\n          Resource: \"*\"\r\n\r\nplugins:\r\n  - serverless-wsgi\r\n  # - serverless-python-requirements\r\n  - serverless-offline\r\n  - serverless-dynamodb-local\r\n\r\ncustom:\r\n  wsgi:\r\n    app: app.app\r\n    packRequirements: false\r\n  pythonRequirements:\r\n    dockerizePip: non-linux\r\n\r\n  dynamodb:\r\n    stages:\r\n      - dev\r\n    start:\r\n      port: 8000\r\n      inMemory: true\r\n      migrate: true\r\n      seed: false\r\n\r\nfunctions:\r\n  api:\r\n    handler: wsgi_handler.handler\r\n    events:\r\n      - httpApi: '*'\r\n      - http:\r\n          path: /{proxy+}\r\n          method: ANY\r\n\r\nresources:\r\n  Resources:\r\n    UsersTable:\r\n      Type: AWS::DynamoDB::Table\r\n      Properties:\r\n        TableName: ${self:provider.environment.USERS_TABLE}\r\n        AttributeDefinitions:\r\n          - AttributeName: userId\r\n            AttributeType: S\r\n        KeySchema:\r\n          - AttributeName: userId\r\n            KeyType: HASH\r\n        BillingMode: PAY_PER_REQUEST\r\n    JournalTable:\r\n      Type: AWS::DynamoDB::Table\r\n      Properties:\r\n        TableName: ${self:provider.environment.JOURNAL_TABLE}\r\n        BillingMode: PAY_PER_REQUEST\r\n        AttributeDefinitions:\r\n          - AttributeName: journalId\r\n            AttributeType: S\r\n          - AttributeName: userId\r\n            AttributeType: S\r\n          - AttributeName: created_at\r\n            AttributeType: S\r\n          - AttributeName: geohash_prefix\r\n            AttributeType: S\r\n        KeySchema:\r\n          - AttributeName: journalId\r\n            KeyType: HASH\r\n        GlobalSecondaryIndexes:\r\n          - IndexName: userId-createdAt\r\n            KeySchema:\r\n              - AttributeName: userId\r\n                KeyType: HASH\r\n              - AttributeName: created_at\r\n                KeyType: RANGE\r\n            Projection:\r\n              ProjectionType: ALL\r\n          - IndexName: geohashPrefixIndex\r\n            KeySchema:\r\n              - AttributeName: geohash_prefix\r\n                KeyType: HASH\r\n              - AttributeName: created_at\r\n                KeyType: RANGE\r\n            Projection:\r\n              ProjectionType: ALL",
+    "command": [
+      "offline"
+    ],
+    "options": {},
+    "orgId": "5169bf5b-6062-42e7-a72c-ca07876d3c26",
+    "orgName": "lowtechit",
+    "userId": "Gts9xZMwpYkhThVZNQ",
+    "userName": "lowtechit",
+    "serviceProviderAwsAccountId": "972199684364",
+    "serviceProviderAwsCfStackId": null,
+    "serviceProviderAwsCfStackCreated": null,
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": null,
+    "serviceProviderAwsCfStackOutputs": null
   }
 }
