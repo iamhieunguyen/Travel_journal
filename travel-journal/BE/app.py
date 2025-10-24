@@ -9,6 +9,7 @@ app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False  # Đảm bảo JSON trả về không bị mã hóa ASCII
 
 
+
 # Register blueprints
 app.register_blueprint(journal_routes)
 app.register_blueprint(user_routes)

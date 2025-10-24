@@ -4,3 +4,5 @@ serverless-wsgi
 PyJWT
 python-dotenv
 Werkzeug
+pygeohash
+

@@ -2,10 +2,15 @@
 from flask import Blueprint, request, jsonify, g
 from services.journal_service import JournalService
 import json
+from utils.geo import parse_bbox
+import logging
+logger = logging.getLogger(__name__)
+
 
 def login_required(f): 
-        def _wrap(*args, **kwargs): 
-            g.current_user = {"userId": "dev-user-123"} 
+        def _wrap(*args, **kwargs):
+            user_id = kwargs.get('user_id')
+            g.current_user = {"userId": user_id or "dev-user-123"}
             return f(*args, **kwargs) 
         _wrap.__name__ = f.__name__ 
         return _wrap
@@ -41,6 +46,7 @@ def create_journal(user_id):
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception:
+        logger.exception("Unhandled create error")
         return jsonify({"error": "Internal Server Error"}), 500
 
 @bp.route("/me", methods=["POST"])
@@ -54,6 +60,7 @@ def create_my_journal():
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     except Exception:
+        logger.exception("Unhandled create error")
         return jsonify({"error": "Internal Server Error"}), 500
 
 # ---------- GET ----------
@@ -129,3 +136,50 @@ def fix_payload_texts(p: dict) -> dict:
         if k in p and isinstance(p[k], str):
             p[k] = demojibake(p[k])
     return p
+
+# ---------- LIST by BBOX ----------    
+
+@bp.route("", methods=["GET"])
+def list_journals():
+    # ?bbox=minLng,minLat,maxLng,maxLat&q=optional&limit=100&lastKey=base64
+    bbox_str = request.args.get("bbox")
+    if not bbox_str:
+        return jsonify({"error": "bbox is required (minLng,minLat,maxLng,maxLat)"}), 400
+    try:
+        bbox = parse_bbox(bbox_str)
+    except Exception as e:
+        return jsonify({"error": f"bbox invalid: {e}"}), 400
+
+    q = request.args.get("q")
+    try:
+        limit = max(1, min(100, int(request.args.get("limit", "100"))))
+    except ValueError:
+        limit = 100
+
+    last_key_param = request.args.get("lastKey")
+    last_key = None
+    if last_key_param:
+        try:
+            last_key = _decode_key(last_key_param)
+        except Exception:
+            return jsonify({"error": "lastKey invalid"}), 400
+
+    items, next_key = svc.list_by_bbox(bbox, q=q, limit=limit, last_key=last_key)
+
+    # map gọn cho marker
+    markers = [{
+        "journalId": it.get("journalId"),
+        "title": it.get("title") or "",
+        "location": it.get("location") or {},
+        "imageUrl": (it.get("imageUrls") or it.get("photos") or [None])[0]
+                    if isinstance(it.get("imageUrls") or it.get("photos"), list) else None
+    } for it in items]
+
+    resp = {
+        "items": markers,
+        "count": len(markers),
+    }
+    if next_key:
+        resp["lastKey"] = _encode_key(next_key)
+
+    return jsonify(resp), 200
