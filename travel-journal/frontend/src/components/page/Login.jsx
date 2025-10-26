@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import loginService from "../../service/Login"; // ✅ import từ file service
+import loginService from "../../service/Login";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -20,6 +22,14 @@ export default function Login() {
       localStorage.setItem("token", token);
       localStorage.setItem("userId", user.userId || user.id);
       localStorage.setItem("userInfo", JSON.stringify(user));
+      localStorage.setItem("userName", user.username);
+      localStorage.setItem("userAvatar", user.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + user.username);
+
+      // Cập nhật trạng thái đăng nhập trong context
+      login({
+        name: user.username,
+        avatar: user.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=" + user.username
+      });
 
       setMessage(`✅ Đăng nhập thành công: ${user.username}`);
       setTimeout(() => navigate("/profile"), 1000);
