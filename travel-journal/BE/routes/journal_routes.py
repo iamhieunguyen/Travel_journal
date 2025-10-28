@@ -40,7 +40,7 @@ def create_journal(user_id):
         return jsonify({"error": "Forbidden"}), 403
     try:
         payload = parse_json_tolerant()  
-        payload = fix_payload_texts(payload)         # 👈 dùng helper
+        payload = fix_payload_texts(payload)         
         j = svc.create(user_id, payload)
         return jsonify(j.to_dict()), 201
     except ValueError as e:
@@ -54,7 +54,7 @@ def create_journal(user_id):
 def create_my_journal():
     try:
         payload = parse_json_tolerant()
-        payload = fix_payload_texts(payload)          # 👈 dùng helper
+        payload = fix_payload_texts(payload)          
         j = svc.create(g.current_user["userId"], payload)
         return jsonify(j.to_dict()), 201
     except ValueError as e:
@@ -80,7 +80,7 @@ def get_journal(journal_id):
 def update_journal(journal_id):
     try:
         payload = parse_json_tolerant()
-        payload = fix_payload_texts(payload)           # 👈 thay vì request.get_json()
+        payload = fix_payload_texts(payload)           
         updated = svc.update(journal_id, g.current_user["userId"], payload)
         return jsonify(updated.to_dict()), 200
     except PermissionError:
