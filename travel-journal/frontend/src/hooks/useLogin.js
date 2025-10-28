@@ -18,7 +18,7 @@ export default function useLogin() {
       localStorage.setItem("userInfo", JSON.stringify(user));
 
       setMessage(`✅ Đăng nhập thành công: ${user.username}`);
-      setTimeout(() => navigate("/profile"), 1000);
+      setTimeout(() => navigate("/home"), 1000);
     } catch (err) {
       setMessage(`❌ ${err.response?.data?.error || "Đăng nhập thất bại"}`);
     } finally {
